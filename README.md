@@ -28,14 +28,10 @@ Projeto desenvolvindo durante as aulas de POO na UniFECAF utilizando **Java 17**
 
 Durante a aula, o professor introduziu também o **Triângulo Retângulo**, utilizando o **Teorema de Pitágoras** para validações:
 
-\[
-h^2 = c_1^2 + c_2^2
-\]
-
 Próximo passo será expandir o sistema para incluir o **menu do Triângulo** com validações:
 
-1. Validação genérica de triângulo  
-2. Validação do retângulo dentro do triângulo  
+1. Validação genérica de triângulo;
+2. Validação do triângulo retângulo;
 3. Validação pitagórica para triângulos 3-4-5  
 
 ---
@@ -44,10 +40,10 @@ Próximo passo será expandir o sistema para incluir o **menu do Triângulo** co
 
 Implementar o menu Triângulo no `Menu.java`, com as seguintes opções:
 
-- Cadastrar triângulo (base e altura)  
-- Calcular área  
-- Calcular perímetro  
-- Validar se é um triângulo retângulo (Pitágoras)  
+- Cadastrar triângulo;  
+- Calcular área;
+- Calcular perímetro;  
+- Validar se é triângulo retângulo (Pitágoras)  
 - Validar se segue a regra 3-4-5  
 - Exibir informações  
 
