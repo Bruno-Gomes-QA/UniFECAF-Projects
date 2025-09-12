@@ -1,7 +1,6 @@
 # Projeto Figuras Geométricas (AAI)
 
 [![Java](https://img.shields.io/badge/Java-17-red?style=for-the-badge&logo=java)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)  
-[![Build](https://img.shields.io/badge/Build-Sucesso-brightgreen?style=for-the-badge&logo=gradle)]()  
 [![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-blue?style=for-the-badge&logo=github)]()  
 [![License](https://img.shields.io/badge/License-MIT-black?style=for-the-badge)]()  
 
