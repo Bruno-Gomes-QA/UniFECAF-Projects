@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Universo Gamer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/characters.css') }}" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__content">
+      <h1>Universo Gamer</h1>
+      <p>Gerencie heróis, ajustando poderes, classes e fraquezas.</p>
+      <div class="hero__actions">
+        <label class="search" for="search">
+          <span class="sr-only">Buscar personagem</span>
+          <input type="search" id="search" placeholder="Pesquisar por nome, classe ou poder" />
+        </label>
+        <button class="btn btn--primary" type="button" data-action="open-create">+ Novo personagem</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="cards" id="cards" aria-live="polite"></section>
+  </main>
+
+  <footer class="footer">
+    <small>&copy; {{ config.get('SWAGGER_TITLE', 'UniFECAF API') }} • Todos os direitos reservados</small>
+  </footer>
+
+  <template id="card-template">
+    <article class="card">
+      <div class="card__badge" data-field="badge"></div>
+      <div class="card__header">
+        <h2 data-field="name"></h2>
+        <div class="card__actions">
+          <button class="icon-btn" type="button" title="Editar" data-action="edit" aria-label="Editar personagem">
+            <span aria-hidden="true">✎</span>
+          </button>
+          <button class="icon-btn icon-btn--danger" type="button" title="Excluir" data-action="delete" aria-label="Excluir personagem">
+            <span aria-hidden="true">✕</span>
+          </button>
+        </div>
+      </div>
+      <dl>
+        <div>
+          <dt>Classe</dt>
+          <dd data-field="class"></dd>
+        </div>
+        <div>
+          <dt>Poder</dt>
+          <dd data-field="power"></dd>
+        </div>
+        <div>
+          <dt>Fraqueza</dt>
+          <dd data-field="weakness"></dd>
+        </div>
+      </dl>
+    </article>
+  </template>
+
+  <div class="modal" id="character-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal__backdrop" data-action="close-modal"></div>
+    <div class="modal__dialog">
+      <button class="modal__close icon-btn" type="button" data-action="close-modal" aria-label="Fechar">×</button>
+      <h2 id="modal-title">Novo personagem</h2>
+      <form id="character-form">
+        <input type="hidden" name="id" />
+        <div class="form__group">
+          <label for="name">Nome</label>
+          <input id="name" name="name" type="text" required maxlength="80" />
+        </div>
+        <div class="form__group">
+          <label for="character-class">Classe</label>
+          <input id="character-class" name="character_class" type="text" required maxlength="80" />
+        </div>
+        <div class="form__group">
+          <label for="character-power">Poder</label>
+          <input id="character-power" name="power" type="text" required maxlength="120" />
+        </div>
+        <div class="form__group">
+          <label for="character-weakness">Fraqueza</label>
+          <input id="character-weakness" name="weakness" type="text" required maxlength="120" />
+        </div>
+        <div class="modal__actions">
+          <button class="btn btn--ghost" type="button" data-action="close-modal">Cancelar</button>
+          <button class="btn btn--primary" type="submit">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const API_LIST_URL = "{{ url_for('characters.list_characters') }}";
+    const API_BASE_URL = API_LIST_URL.replace(/\/$/, '');
+    const initialData = {{ characters | tojson | safe }};
+
+    const cardsContainer = document.getElementById('cards');
+    const cardTemplate = document.getElementById('card-template');
+    const searchInput = document.getElementById('search');
+    const modal = document.getElementById('character-modal');
+    const form = document.getElementById('character-form');
+    const modalTitle = document.getElementById('modal-title');
+    const toastEl = document.getElementById('toast');
+    const createBtn = document.querySelector('[data-action="open-create"]');
+    const fields = {
+      name: form.elements['name'],
+      class: form.elements['character_class'],
+      power: form.elements['power'],
+      weakness: form.elements['weakness'],
+    };
+
+    let charactersState = Array.isArray(initialData) ? initialData.slice() : [];
+    let editingId = null;
+
+    async function reloadCharacters() {
+      try {
+        const response = await fetch(API_LIST_URL, { headers: { Accept: 'application/json' } });
+        if (!response.ok) throw new Error('Falha ao buscar personagens');
+        charactersState = await response.json();
+        renderCards();
+      } catch (error) {
+        showToast(error.message || 'Erro ao carregar personagens', true);
+      }
+    }
+
+    function renderCards() {
+      cardsContainer.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+      charactersState.forEach((character) => {
+        const node = cardTemplate.content.cloneNode(true);
+        const card = node.querySelector('.card');
+        card.dataset.id = character.id;
+        card.dataset.name = character.name.toLowerCase();
+        card.dataset.class = character.class.toLowerCase();
+        card.dataset.power = character.power.toLowerCase();
+
+        node.querySelector('[data-field="badge"]').textContent = `#${String(character.id).padStart(2, '0')}`;
+        node.querySelector('[data-field="name"]').textContent = character.name;
+        node.querySelector('[data-field="class"]').textContent = character.class;
+        node.querySelector('[data-field="power"]').textContent = character.power;
+        node.querySelector('[data-field="weakness"]').textContent = character.weakness;
+
+        fragment.appendChild(node);
+      });
+      cardsContainer.appendChild(fragment);
+      applySearchFilter();
+    }
+
+    function normalize(text) {
+      return (text || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+    }
+
+    function applySearchFilter() {
+      const term = normalize(searchInput.value);
+      const cards = cardsContainer.querySelectorAll('.card');
+      cards.forEach((card) => {
+        const fields = [card.dataset.name, card.dataset.class, card.dataset.power].map(normalize);
+        const visible = !term || fields.some((field) => field.includes(term));
+        card.classList.toggle('card--hidden', !visible);
+      });
+    }
+
+    function openModal(character = null) {
+      form.reset();
+      editingId = null;
+      modalTitle.textContent = character ? 'Editar personagem' : 'Novo personagem';
+      if (character) {
+        editingId = character.id;
+        fields.name.value = character.name;
+        fields.class.value = character.class;
+        fields.power.value = character.power;
+        fields.weakness.value = character.weakness;
+      }
+      modal.classList.add('modal--open');
+      document.body.classList.add('no-scroll');
+      fields.name.focus();
+    }
+
+    function closeModal() {
+      modal.classList.remove('modal--open');
+      document.body.classList.remove('no-scroll');
+      form.reset();
+      editingId = null;
+    }
+
+    function showToast(message, isError = false) {
+      toastEl.textContent = message;
+      toastEl.classList.toggle('toast--error', isError);
+      toastEl.classList.add('toast--visible');
+      clearTimeout(showToast._timeout);
+      showToast._timeout = setTimeout(() => {
+        toastEl.classList.remove('toast--visible');
+      }, 3200);
+    }
+
+    async function createCharacter(payload) {
+      const response = await fetch(API_LIST_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Não foi possível criar o personagem');
+      }
+      return response.json();
+    }
+
+    async function updateCharacter(id, payload) {
+      const response = await fetch(`${API_BASE_URL}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Não foi possível atualizar o personagem');
+      }
+      return response.json();
+    }
+
+    async function deleteCharacter(id) {
+      const response = await fetch(`${API_BASE_URL}/${id}`, {
+        method: 'DELETE',
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Não foi possível excluir o personagem');
+      }
+      return response.json();
+    }
+
+    searchInput.addEventListener('input', applySearchFilter);
+
+    createBtn.addEventListener('click', () => openModal());
+
+    modal.addEventListener('click', (event) => {
+      if (event.target.dataset.action === 'close-modal' || event.target === modal) {
+        closeModal();
+      }
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const payload = {
+        name: fields.name.value.trim(),
+        class: fields.class.value.trim(),
+        power: fields.power.value.trim(),
+        weakness: fields.weakness.value.trim(),
+      };
+
+      if (!payload.name || !payload.class || !payload.power || !payload.weakness) {
+        showToast('Preencha todos os campos.', true);
+        return;
+      }
+
+      try {
+        if (editingId) {
+          const updated = await updateCharacter(editingId, payload);
+          charactersState = charactersState.map((item) => (item.id === editingId ? updated : item));
+          showToast('Personagem atualizado com sucesso');
+        } else {
+          const created = await createCharacter(payload);
+          charactersState = [...charactersState, created];
+          showToast('Personagem criado com sucesso');
+        }
+        renderCards();
+        closeModal();
+      } catch (error) {
+        showToast(error.message, true);
+      }
+    });
+
+    cardsContainer.addEventListener('click', async (event) => {
+      const action = event.target.closest('[data-action]')?.dataset.action;
+      if (!action) return;
+
+      const card = event.target.closest('.card');
+      const id = Number(card?.dataset.id);
+      const character = charactersState.find((item) => item.id === id);
+      if (!character) return;
+
+      if (action === 'edit') {
+        openModal(character);
+      }
+
+      if (action === 'delete') {
+        const confirmed = confirm(`Deseja remover ${character.name}?`);
+        if (!confirmed) return;
+        try {
+          await deleteCharacter(id);
+          charactersState = charactersState.filter((item) => item.id !== id);
+          renderCards();
+          showToast('Personagem removido');
+        } catch (error) {
+          showToast(error.message, true);
+        }
+      }
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && modal.classList.contains('modal--open')) {
+        closeModal();
+      }
+    });
+
+    renderCards();
+    reloadCharacters();
+  </script>
+</body>
+</html>
