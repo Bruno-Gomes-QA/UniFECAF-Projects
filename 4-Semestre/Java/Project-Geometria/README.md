@@ -54,3 +54,14 @@ Projeto desenvolvindo durante as aulas de POO na UniFECAF utilizando **Java 17**
 - Cada opção chama diretamente os métodos da classe `Triangulo` para cadastrar, calcular, classificar, validar, verificar retângulo, testar o padrão 3-4-5 e exibir os dados. A última opção encerra o sub-menu e retorna ao menu principal.
 
 ---
+
+## Exemplos para Testar
+
+| Lados informados | Situação esperada |
+| --- | --- |
+| `3, 4, 5` | Triângulo válido; tipo escaleno; retângulo; padrão 3-4-5 true |
+| `5, 5, 5` | Triângulo válido; tipo equilátero; não retângulo; padrão 3-4-5 false |
+| `6, 6, 4` | Triângulo válido; tipo isósceles; não retângulo; padrão 3-4-5 false |
+| `7, 8, 9` | Triângulo válido; tipo escaleno; não retângulo; padrão 3-4-5 false |
+| `2, 2, 5` | Triângulo inválido (falha na desigualdade triangular); demais classificações não se aplicam |
+| `6, 8, 10` | Triângulo válido; tipo escaleno; retângulo (hipotenusa 10); padrão 3-4-5 false |
