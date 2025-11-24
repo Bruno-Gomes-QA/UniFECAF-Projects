@@ -1,0 +1,24 @@
+[project]
+name = "heroverse-backend"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Bruno-Gomes-QA",email = "bruno.gomes.qa@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<4"
+dependencies = [
+    "flask (>=3.1.2,<4.0.0)",
+    "sqlalchemy (>=2.0.44,<3.0.0)",
+    "pydantic (>=2.12.4,<3.0.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "flask-jwt-extended (>=4.7.1,<5.0.0)",
+    "passlib (>=1.7.4,<2.0.0)",
+    "email-validator (>=2.2.0,<3.0.0)",
+    "flasgger (>=0.9.7,<0.10.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
