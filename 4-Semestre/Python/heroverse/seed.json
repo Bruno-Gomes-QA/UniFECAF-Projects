@@ -1,0 +1,57 @@
+universos = [
+  {
+    "id": 1,
+    "nome": "Terra-616",
+    "descricao": "Linha principal onde a maioria dos heróis clássicos coexistem."
+  },
+  {
+    "id": 2,
+    "nome": "Neo Tokyo-9",
+    "descricao": "Metrópole futurista dominada por megacorporações e tecnologia cibernética."
+  },
+  {
+    "id": 3,
+    "nome": "Legends of Zelda ",
+    "descricao": "Reino mítico de deuses, guerreiros e magia ancestral."
+  }
+]
+
+
+tipos = [
+  {
+    "id": 1,
+    "nome": "Herói",
+    "descricao": "Luta pela justiça e proteção dos inocentes."
+  },
+  {
+    "id": 2,
+    "nome": "Vilão",
+    "descricao": "Persegue objetivos egoístas ou destrutivos, a qualquer custo."
+  },
+  {
+    "id": 3,
+    "nome": "Anti-herói",
+    "descricao": "Atua com moralidade cinzenta, usando métodos questionáveis."
+  }
+]
+
+personagens = [
+  {
+    "id": 35,
+    "nome": "Link",
+    "idade": 13,
+    "poder_principal": "Arco e Flecha e Espada",
+    "imagem_url": "https://static.wikia.nocookie.net/liberproeliis/images/c/c3/TMC_Link_Artwork.png/revision/latest?cb=20181207223514&path-prefix=pt-br",
+    "universo_id": 3,
+    "tipo_id": 1
+  },
+  {
+    "id": 36,
+    "nome": "Mario",
+    "idade": 24,
+    "poder_principal": "Encanador e Salto",
+    "imagem_url": "https://static.wikia.nocookie.net/herois/images/c/c4/MPSS_Mario.webp/revision/latest?cb=20220607201508&path-prefix=pt-br ",
+    "universo_id": 4,
+    "tipo_id": 1
+  }
+]
